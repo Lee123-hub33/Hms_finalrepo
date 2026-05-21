@@ -1,0 +1,1 @@
+Place migration files here. Use `alembic revision --autogenerate -m "initial"` to create an initial migration after configuring `alembic.ini` with your DB URL.
