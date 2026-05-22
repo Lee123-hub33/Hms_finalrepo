@@ -26,6 +26,7 @@ class Settings(BaseSettings):
     # ── App ───────────────────────────────────────────────────────────────────
     app_env:         str  = "development"
     allowed_origins: str  = "http://localhost:8000"
+    vite_api_url:    str  = ""
 
     @property
     def database_url(self) -> str:
