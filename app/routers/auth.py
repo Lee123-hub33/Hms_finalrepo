@@ -6,6 +6,7 @@ from app.auth import create_access_token, hash_password, verify_password
 from app.database import get_db
 from app import crud
 from app.models.user import User
+from app.models.staff import Staff
 from app.schemas import TokenResponse, UserCreate, RefreshRequest, PasswordResetRequest, PasswordResetConfirm
 
 router = APIRouter(prefix="/auth", tags=["Auth"])
@@ -54,7 +55,9 @@ def login(
 
     # successful login: reset counter and issue tokens
     _login_attempts[ip] = (0, now)
-    access = create_access_token(subject=user.username)
+    staff = db.query(Staff).filter(Staff.user_id == user.id).first()
+    role_val = staff.role.value if (staff and staff.role) else None
+    access = create_access_token(subject=user.username, role=role_val)
     refresh = crud.create_refresh_token(db, user.id)
     return TokenResponse(access_token=access, refresh_token=refresh)
 
@@ -64,7 +67,9 @@ def refresh_token(payload: RefreshRequest, db: Session = Depends(get_db)):
     user = crud.get_user_by_refresh_token(db, payload.refresh_token)
     if not user:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid refresh token")
-    access = create_access_token(subject=user.username)
+    staff = db.query(Staff).filter(Staff.user_id == user.id).first()
+    role_val = staff.role.value if (staff and staff.role) else None
+    access = create_access_token(subject=user.username, role=role_val)
     # keep refresh token valid; optionally rotate here
     return TokenResponse(access_token=access, refresh_token=payload.refresh_token)
 

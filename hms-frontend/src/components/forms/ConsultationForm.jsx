@@ -2,6 +2,7 @@
 // Fix [BUG]: field was notes — backend expects clinical_notes
 import { useState } from "react";
 import { addConsultation } from "../../api/clinical";
+import { requestLab } from "../../api/lab";
 import Input from "../ui/Input";
 import Button from "../ui/Button";
 
@@ -9,6 +10,7 @@ export default function ConsultationForm({ encounterId, onSuccess }) {
   const [form, setForm] = useState({
     chief_complaint: "", clinical_notes: "", diagnosis: "",
   });
+  const [labTest, setLabTest] = useState("");
   const [error, setError]   = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -20,6 +22,14 @@ export default function ConsultationForm({ encounterId, onSuccess }) {
     setLoading(true);
     try {
       await addConsultation({ encounter_id: parseInt(encounterId), ...form });
+      
+      if (labTest.trim()) {
+        await requestLab({
+          encounter_id: parseInt(encounterId),
+          test_requested: labTest.trim()
+        });
+      }
+
       onSuccess?.();
     } catch (err) {
       setError(err.response?.data?.detail || "Failed to save consultation.");
@@ -43,9 +53,19 @@ export default function ConsultationForm({ encounterId, onSuccess }) {
       </div>
       <Input label="Diagnosis" value={form.diagnosis} onChange={set("diagnosis")}
         placeholder="e.g. Malaria (ICD: B50)" required />
+      
+      <div className="pt-4 border-t border-gray-100">
+        <Input 
+          label="Request Lab Test (Optional)" 
+          value={labTest} 
+          onChange={(e) => setLabTest(e.target.value)}
+          placeholder="e.g. Full Blood Count, Malaria Parasites" 
+        />
+      </div>
+
       {error && <p className="text-xs text-red-500">{error}</p>}
       <Button type="submit" variant="primary" disabled={loading} className="w-full">
-        {loading ? "Saving..." : "Save Consultation"}
+        {loading ? "Saving..." : "Save Consultation & Request Lab"}
       </Button>
     </form>
   );

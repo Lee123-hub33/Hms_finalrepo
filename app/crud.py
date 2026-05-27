@@ -205,9 +205,10 @@ def create_lab_request(db: Session, data: LabRequestCreate) -> LabRequest:
     return lab
 
 
-def complete_lab_request(db: Session, lab_id: int, results: str) -> LabRequest:
+def complete_lab_request(db: Session, lab_id: int, results: str, notes: Optional[str] = None) -> LabRequest:
     lab = _get_or_404(db, LabRequest, lab_id)
     lab.results      = results
+    lab.technician_notes = notes
     lab.status       = LabStatusEnum.completed
     lab.completed_at = datetime.now(timezone.utc)
     db.commit()
@@ -298,8 +299,36 @@ def adjust_inventory(db: Session, item_id: int, delta: int) -> Inventory:
 
 
 def get_lab_requests_by_encounter(db: Session, encounter_id: int) -> List[LabRequest]:
-    get_encounter_or_404(db, encounter_id)
-    return db.query(LabRequest).filter(LabRequest.encounter_id == encounter_id).all()
+    encounter = get_encounter_or_404(db, encounter_id)
+    patient = db.query(Patient).filter(Patient.id == encounter.patient_id).first()
+    patient_name = patient.name if patient else None
+
+    requests = db.query(LabRequest).filter(LabRequest.encounter_id == encounter_id).all()
+    for lab in requests:
+        lab.patient_name = patient_name
+    return requests
+
+
+def get_all_lab_requests(
+    db: Session,
+    skip: int = 0,
+    limit: int = 100,
+    status: Optional[LabStatusEnum] = None,
+) -> List[LabRequest]:
+    query = db.query(LabRequest, Patient.name.label("patient_name")).join(
+        Encounter, LabRequest.encounter_id == Encounter.id
+    ).join(
+        Patient, Encounter.patient_id == Patient.id
+    )
+    if status is not None:
+        query = query.filter(LabRequest.status == status)
+    results = query.order_by(LabRequest.requested_at.desc()).offset(skip).limit(limit).all()
+
+    output = []
+    for lab, patient_name in results:
+        lab.patient_name = patient_name
+        output.append(lab)
+    return output
 
 
 def get_billing_by_encounter(db: Session, encounter_id: int) -> List[Billing]:

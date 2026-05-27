@@ -21,8 +21,8 @@ export default function Sidebar() {
   const { logout } = useAuth();
 
   return (
-    <aside className="w-64 bg-blue-900 text-white min-h-screen flex flex-col">
-      <div className="p-6 text-xl font-bold border-b border-blue-700">
+    <aside className="w-64 bg-slate-950 text-white min-h-screen flex flex-col">
+      <div className="p-6 text-xl font-bold border-b border-slate-800">
         🏥 HMS
       </div>
       <nav className="flex-1 p-4 space-y-1">
@@ -33,7 +33,7 @@ export default function Sidebar() {
             end={to === "/"}
             className={({ isActive }) =>
               `flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition
-              ${isActive ? "bg-blue-600" : "hover:bg-blue-800"}`
+              ${isActive ? "bg-slate-800" : "hover:bg-slate-900"}`
             }
           >
             <Icon size={16} />
@@ -43,7 +43,7 @@ export default function Sidebar() {
       </nav>
       <button
         onClick={logout}
-        className="flex items-center gap-3 px-7 py-4 text-sm hover:bg-blue-800"
+        className="flex items-center gap-3 px-7 py-4 text-sm hover:bg-slate-900 transition"
       >
         <LogOut size={16} /> Logout
       </button>

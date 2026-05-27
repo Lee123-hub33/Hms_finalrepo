@@ -16,8 +16,8 @@ export function AuthProvider({ children }) {
     const token = res.data.access_token;
 
     // Decode JWT payload to read actual role — no hardcoding
-    const payload    = JSON.parse(atob(token.split(".")[1]));
-    const userPayload = { token, username: payload.sub };
+    const payload = JSON.parse(atob(token.split(".")[1]));
+    const userPayload = { token, username: payload.sub, role: payload.role };
 
     localStorage.setItem("token", token);
     localStorage.setItem("user", JSON.stringify(userPayload));

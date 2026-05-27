@@ -5,7 +5,7 @@ SECRET_KEY and token expiry come from app.config — never hardcoded.
 """
 
 from datetime import datetime, timedelta, timezone
-from typing import Any, List
+from typing import Any, List, Optional
 
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
@@ -42,11 +42,13 @@ def verify_password(plain: str, hashed: str) -> bool:
 
 # ── Token helpers ─────────────────────────────────────────────────────────────
 
-def create_access_token(subject: str) -> str:
+def create_access_token(subject: str, role: Optional[str] = None) -> str:
     expire  = datetime.now(timezone.utc) + timedelta(
         minutes=settings.access_token_expire_minutes
     )
     payload = {"sub": subject, "exp": expire}
+    if role:
+        payload["role"] = role
     return jwt.encode(payload, settings.secret_key, algorithm=settings.algorithm)
 
 

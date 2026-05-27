@@ -10,10 +10,10 @@ export default function Navbar() {
         Welcome back, <span className="font-semibold text-gray-800">{user?.username}</span>
       </span>
       <div className="flex items-center gap-3">
-        <button className="relative text-gray-500 hover:text-blue-600">
+        <button className="relative text-gray-500 hover:text-slate-900">
           <Bell size={18} />
         </button>
-        <div className="w-8 h-8 rounded-full bg-blue-600 text-white text-xs
+        <div className="w-8 h-8 rounded-full bg-slate-900 text-white text-xs
           flex items-center justify-center font-bold">
           {user?.username?.[0]?.toUpperCase()}
         </div>

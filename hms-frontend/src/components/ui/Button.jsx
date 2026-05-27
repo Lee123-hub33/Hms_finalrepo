@@ -4,7 +4,7 @@ export default function Button({
   variant = "primary", disabled = false, className = "",
 }) {
   const variants = {
-    primary:   "bg-blue-600 hover:bg-blue-700 text-white",
+    primary:   "bg-slate-900 hover:bg-slate-800 text-white",
     success:   "bg-emerald-600 hover:bg-emerald-700 text-white",
     danger:    "bg-red-600 hover:bg-red-700 text-white",
     warning:   "bg-amber-500 hover:bg-amber-600 text-white",

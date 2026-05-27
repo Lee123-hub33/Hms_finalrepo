@@ -226,6 +226,7 @@ class LabRequestCreate(BaseModel):
 
 class LabResultUpdate(BaseModel):
     results: str = Field(..., min_length=1)
+    technician_notes: Optional[str] = None
 
 
 class LabOut(BaseModel):
@@ -233,9 +234,11 @@ class LabOut(BaseModel):
     encounter_id:   int
     test_requested: str
     results:        Optional[str]
+    technician_notes: Optional[str]
     status:         LabStatusEnum
     requested_at:   datetime
     completed_at:   Optional[datetime]
+    patient_name:   Optional[str] = None
 
     model_config = {"from_attributes": True}
 
